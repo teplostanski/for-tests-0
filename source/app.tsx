@@ -1,9 +1,36 @@
 import React from 'react';
-import {useApp, useInput, Text, Box} from 'ink';
+import {useApp, useInput, Text, Box, useStdout} from 'ink';
 
 export default function App() {
 	const [counter, setCounter] = React.useState(0);
 	const {exit} = useApp();
+	const { stdout } = useStdout();
+	const [size, setSize] = React.useState({
+			columns: process.stdout.columns,
+			rows: process.stdout.rows,
+	});
+
+
+	React.useMemo(() => {
+		stdout.write("\x1b[?1049h");
+	}, [stdout]);
+		
+	React.useEffect(() => {
+		function onResize() {
+			setSize({
+				columns: process.stdout.columns,
+				rows: process.stdout.rows,
+			});
+		}
+	
+		process.stdout.on("resize", onResize);
+		process.stdout.write("\x1b[?1049h");
+
+		return () => {
+			process.stdout.off("resize", onResize);
+			process.stdout.write("\x1b[?1049l");
+		};
+	}, []);
 
 	React.useEffect(() => {
 		const timer = setInterval(() => {
@@ -21,8 +48,15 @@ export default function App() {
 		}
 	});
 
+	//const enterAltScreenCommand = '\x1b[?1049h';
+	//const leaveAltScreenCommand = '\x1b[?1049l';
+	//process.stdout.write(enterAltScreenCommand);
+	//process.on('exit', () => {
+	       // process.stdout.write(leaveAltScreenCommand);
+	//});
+
 	return (
-		<Box width={process.stdout.columns} height={process.stdout.rows} borderStyle="round">
+		<Box width={size.columns} height={size.rows} borderStyle="round">
 			<Text>
 				{counter} rows {process.stdout.rows} columns {process.stdout.columns}
 			</Text>
