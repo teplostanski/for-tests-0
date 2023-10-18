@@ -1,5 +1,7 @@
 import React from 'react';
 import {useApp, useInput, Text, Box, useStdout} from 'ink';
+import Markdown from './md.js';
+import dedent from 'dedent';
 
 export default function App() {
 	const [counter, setCounter] = React.useState(0);
@@ -35,12 +37,12 @@ export default function App() {
 	React.useEffect(() => {
 		const timer = setInterval(() => {
 			setCounter(prevCounter => prevCounter + 1);
-		}, 100);
+		}, 1000);
 
 		return () => {
 			clearInterval(timer);
 		};
-	});
+	 });
 
 	useInput((input, key) => {
 		if (input === 'q' || key.escape) {
@@ -55,11 +57,27 @@ export default function App() {
 	       // process.stdout.write(leaveAltScreenCommand);
 	//});
 
+	const text = dedent`
+	  # Hello
+	
+	  This is **markdown** printed in the \`terminal\`
+	`;
+
+	
 	return (
-		<Box width={size.columns} height={size.rows} borderStyle="round">
-			<Text>
-				{counter} rows {process.stdout.rows} columns {process.stdout.columns}
-			</Text>
+		<Box flexDirection="column" width={size.columns} height={size.rows} borderStyle="round">
+			<Box borderStyle="round" borderColor="green">
+				<Text color="yellow">
+					{counter} rows {process.stdout.rows} columns {process.stdout.columns}
+				</Text>
+			</Box>
+			<Box borderStyle="round" borderColor="green">
+				<Text color="green">
+					{counter} rows iuhu6ytgbhhjjYyyh
+				</Text>
+
+				<Markdown>{text}</Markdown>
+			 </Box>
 		</Box>
 	);
 }
